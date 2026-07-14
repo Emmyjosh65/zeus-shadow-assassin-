@@ -1,1 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeus Shadow Assassin — Premium</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
 
+<!-- ====== LOADING SCREEN ====== -->
+<div id="loadingScreen">
+    <div class="loader-ring"></div>
+    <div class="loader-blade">🗡️</div>
+    <h1 class="glow-text shadow-title">ZEUS</h1>
+    <h2 class="shadow-subtitle">SHADOW ASSASSIN</h2>
+    <p class="loading-sub">Initializing Assassin Protocol...</p>
+    <div class="progress-bar"><div class="progress-fill"></div></div>
+</div>
+
+<!-- ====== MAIN GAME ====== -->
+<div id="gameContainer" class="hidden">
+
+    <!-- TOP BAR -->
+    <header class="top-bar">
+        <div class="logo">
+            <span class="logo-icon">🗡️</span>
+            <span>ZEUS <small>ASSASSIN</small></span>
+        </div>
+        <div class="game-stats">
+            <div class="stat-badge" id="roundDisplay">DUEL 1</div>
+            <div class="stat-badge iq-badge" id="rankDisplay">RANK: SHADOW</div>
+            <div class="stat-badge iq-badge" id="assassinIQDisplay">IQ: --</div>
+        </div>
+        <button class="hamburger" id="menuToggle" onclick="toggleMenu()">⚔️</button>
+    </header>
+
+    <!-- SIDE MENU -->
+    <nav id="sideMenu" class="side-menu hidden">
+        <div class="menu-header">
+            <h3>🗡️ ASSASSIN MENU</h3>
+            <button onclick="toggleMenu()">✕</button>
+        </div>
+        <div class="menu-body">
+            <button class="menu-btn" onclick="toggleNotes()"><span>📜</span> Shadow Notes</button>
+            <button class="menu-btn" onclick="showStats()"><span>📊</span> Assassin Stats</button>
+            <button class="menu-btn" onclick="showAbilities()"><span>⚡</span> Abilities Guide</button>
+            <button class="menu-btn" onclick="showAbout()"><span>ℹ️</span> About Zeus</button>
+            <button class="menu-btn" onclick="contactOwner()"><span>📞</span> Contact Owner</button>
+            <button class="menu-btn reset-btn" onclick="resetGame()"><span>🔄</span> New Duel</button>
+        </div>
+        <div class="menu-footer">
+            <p>👑 Lord Zeus</p>
+            <p>📞 +234 906 760 078</p>
+            <p class="footer-motto">"Strike from the shadows. Rule the night."</p>
+        </div>
+    </nav>
+
+    <!-- ====== GAME BOARD ====== -->
+    <div class="board">
+
+        <!-- BATTLE ARENA -->
+        <div class="arena-container">
+            <div class="arena-header">
+                <h2>⚔️ THE SHADOW ARENA ⚔️</h2>
+            </div>
+            <canvas id="gameCanvas" width="800" height="450"></canvas>
+
+            <!-- BATTLE STATUS OVERLAY -->
+            <div class="battle-status" id="battleStatus">
+                <div class="combat-log" id="combatLog">
+                    <span class="log-entry">🗡️ The duel begins...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PLAYER STATS BAR -->
+        <div class="stats-bar">
+            <div class="fighter-stat player-stat">
+                <div class="fighter-info">
+                    <span class="fighter-icon">👤</span>
+                    <span class="fighter-name">YOU</span>
+                    <span class="fighter-title">Shadow Initiate</span>
+                </div>
+                <div class="health-bar-container">
+                    <div class="health-label">❤️ HP</div>
+                    <div class="health-bar">
+                        <div class="health-fill player-health" id="playerHealthFill" style="width:100%"></div>
+                    </div>
+                    <span class="health-text" id="playerHealthText">100</span>
+                </div>
+                <div class="energy-bar-container">
+                    <div class="energy-label">⚡ Energy</div>
+                    <div class="energy-bar">
+                        <div class="energy-fill player-energy" id="playerEnergyFill" style="width:100%"></div>
+                    </div>
+                    <span class="energy-text" id="playerEnergyText">100</span>
+                </div>
+            </div>
+
+            <div class="vs-divider">
+                <span>⚔️</span>
+            </div>
+
+            <div class="fighter-stat enemy-stat">
+                <div class="fighter-info">
+                    <span class="fighter-icon">🗡️</span>
+                    <span class="fighter-name">ZEUS</span>
+                    <span class="fighter-title">Shadow Master</span>
+                </div>
+                <div class="health-bar-container">
+                    <div class="health-label">❤️ HP</div>
+                    <div class="health-bar">
+                        <div class="health-fill enemy-health" id="enemyHealthFill" style="width:100%"></div>
+                    </div>
+                    <span class="health-text" id="enemyHealthText">100</span>
+                </div>
+                <div class="energy-bar-container">
+                    <div class="energy-label">⚡ Energy</div>
+                    <div class="energy-bar">
+                        <div class="energy-fill enemy-energy" id="enemyEnergyFill" style="width:100%"></div>
+                    </div>
+                    <span class="energy-text" id="enemyEnergyText">100</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTION PANEL -->
+        <div class="action-panel">
+            <div class="action-header">
+                <h3>⚡ SELECT YOUR MOVE</h3>
+                <div class="turn-info" id="turnIndicator">
+                    <span class="turn-dot"></span>
+                    <span>Your Turn</span>
+                </div>
+            </div>
+            <div class="action-buttons" id="actionButtons">
+                <button class="action-btn attack-btn" onclick="playerAttack('light')" id="btnLight">
+                    <span class="action-icon">⚔️</span>
+                    <span class="action-name">Quick Strike</span>
+                    <span class="action-desc">Light damage • 0 Energy</span>
+                    <span class="action-dmg">15 DMG</span>
+                </button>
+                <button class="action-btn heavy-btn" onclick="playerAttack('heavy')" id="btnHeavy">
+                    <span class="action-icon">🗡️</span>
+                    <span class="action-name">Shadow Slash</span>
+                    <span class="action-desc">Heavy damage • 20 Energy</span>
+                    <span class="action-dmg">35 DMG</span>
+                </button>
+                <button class="action-btn special-btn" onclick="playerAttack('special')" id="btnSpecial">
+                    <span class="action-icon">💫</span>
+                    <span class="action-name">Assassin's Strike</span>
+                    <span class="action-desc">Massive damage • 40 Energy</span>
+                    <span class="action-dmg">60 DMG</span>
+                </button>
+                <button class="action-btn defend-btn" onclick="playerDefend()" id="btnDefend">
+                    <span class="action-icon">🛡️</span>
+                    <span class="action-name">Shadow Veil</span>
+                    <span class="action-desc">Block & recover • +30 Energy</span>
+                    <span class="action-dmg">BLOCK</span>
+                </button>
+                <button class="action-btn combo-btn" onclick="playerCombo()" id="btnCombo">
+                    <span class="action-icon">🔥</span>
+                    <span class="action-name">Combo Chain</span>
+                    <span class="action-desc">2-hit combo • 35 Energy</span>
+                    <span class="action-dmg">50 DMG</span>
+                </button>
+                <button class="action-btn stealth-btn" onclick="playerStealth()" id="btnStealth">
+                    <span class="action-icon">🌙</span>
+                    <span class="action-name">Shadow Step</span>
+                    <span class="action-desc">Stealth mode • +50 Energy</span>
+                    <span class="action-dmg">EVADE</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- COMBO DISPLAY -->
+        <div class="combo-display" id="comboDisplay">
+            <span class="combo-label">COMBO</span>
+            <span class="combo-counter" id="comboCounter">0</span>
+            <span class="combo-multiplier" id="comboMultiplier">x1.0</span>
+        </div>
+
+        <!-- MESSAGE BOX -->
+        <div class="message-section">
+            <div id="messageBox" class="message-box">
+                <span class="msg-icon">🗡️</span>
+                <span>Welcome, assassin. Strike from the shadows.</span>
+            </div>
+        </div>
+
+        <!-- SCOREBOARD -->
+        <div class="scoreboard">
+            <div class="score-card player-score-card">
+                <h3>👤 Your Wins</h3>
+                <span id="playerScore">0</span>
+            </div>
+            <div class="score-card vs-card">
+                <h3>🏆 DUELS</h3>
+                <span id="duelCount">0</span>
+            </div>
+            <div class="score-card zeus-score-card">
+                <h3>🗡️ Zeus Wins</h3>
+                <span id="zeusScore">0</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ====== WIN MODAL ====== -->
+<div id="winModal" class="modal hidden">
+    <div class="modal-content premium-modal">
+        <div class="trophy" id="winEmoji">🏆</div>
+        <h2 id="winnerText">VICTORY</h2>
+        <div class="iq-result">
+            <span class="iq-label">Assassin IQ Rating</span>
+            <span class="iq-value" id="assassinIQValue">0</span>
+        </div>
+        <div class="rank-badge" id="rankBadge">
+            <span class="rank-label">RANK</span>
+            <span class="rank-name" id="rankName">SHADOW</span>
+        </div>
+        <div class="modal-stats" id="modalStats"></div>
+        <div class="modal-actions">
+            <button class="btn btn-primary" onclick="closeModal('winModal'); resetGame();">⚔️ Next Duel</button>
+            <button class="btn btn-secondary" onclick="closeModal('winModal')">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- ====== NOTES MODAL ====== -->
+<div id="notesModal" class="modal hidden">
+    <div class="modal-content premium-modal notes-modal">
+        <h2>📜 Shadow Notes</h2>
+        <textarea id="notesTextArea" placeholder="Write your assassin strategies here..." rows="6"></textarea>
+        <div class="modal-actions">
+            <button class="btn btn-primary" onclick="saveNotes()">💾 Save</button>
+            <button class="btn btn-secondary" onclick="closeModal('notesModal')">Close</button>
+        </div>
+        <div class="notes-info">
+            <small>💾 Notes are saved automatically in your browser.</small>
+        </div>
+    </div>
+</div>
+
+<!-- ====== STATS MODAL ====== -->
+<div id="statsModal" class="modal hidden">
+    <div class="modal-content premium-modal">
+        <h2>📊 Assassin Statistics</h2>
+        <div id="statsContent" class="stats-content"></div>
+        <button class="btn btn-secondary" onclick="closeModal('statsModal')">Close</button>
+    </div>
+</div>
+
+<!-- ====== ABILITIES MODAL ====== -->
+<div id="abilitiesModal" class="modal hidden">
+    <div class="modal-content premium-modal">
+        <h2>⚡ Abilities Guide</h2>
+        <div class="abilities-grid">
+            <div class="ability-card">
+                <span class="abi-icon">⚔️</span>
+                <span class="abi-name">Quick Strike</span>
+                <span class="abi-desc">15 DMG • 0 Energy</span>
+                <span class="abi-detail">Basic attack. Always available.</span>
+            </div>
+            <div class="ability-card">
+                <span class="abi-icon">🗡️</span>
+                <span class="abi-name">Shadow Slash</span>
+                <span class="abi-desc">35 DMG • 20 Energy</span>
+                <span class="abi-detail">Heavy strike that pierces guard.</span>
+            </div>
+            <div class="ability-card">
+                <span class="abi-icon">💫</span>
+                <span class="abi-name">Assassin's Strike</span>
+                <span class="abi-desc">60 DMG • 40 Energy</span>
+                <span class="abi-detail">Devastating finisher.</span>
+            </div>
+            <div class="ability-card">
+                <span class="abi-icon">🛡️</span>
+                <span class="abi-name">Shadow Veil</span>
+                <span class="abi-desc">Block +30 Energy</span>
+                <span class="abi-detail">Block all damage and recover.</span>
+            </div>
+            <div class="ability-card">
+                <span class="abi-icon">🔥</span>
+                <span class="abi-name">Combo Chain</span>
+                <span class="abi-desc">50 DMG • 35 Energy</span>
+                <span class="abi-detail">Two rapid strikes. Combo builds.</span>
+            </div>
+            <div class="ability-card">
+                <span class="abi-icon">🌙</span>
+                <span class="abi-name">Shadow Step</span>
+                <span class="abi-desc">Evade +50 Energy</span>
+                <span class="abi-detail">Vanish into shadows, recover.</span>
+            </div>
+        </div>
+        <button class="btn btn-secondary" onclick="closeModal('abilitiesModal')">Close</button>
+    </div>
+</div>
+
+<!-- ====== ABOUT MODAL ====== -->
+<div id="aboutModal" class="modal hidden">
+    <div class="modal-content premium-modal">
+        <h2>🗡️ Zeus Shadow Assassin</h2>
+        <div class="about-body">
+            <p><strong>Version:</strong> 1.0 Premium</p>
+            <p><strong>Master Assassin:</strong> Zeus</p>
+            <p><strong>Contact:</strong> +234 906 760 078</p>
+            <hr>
+            <p>A turn-based assassin duel game. Challenge the legendary Zeus AI in the Shadow Arena.</p>
+            <p><strong>How to Play:</strong></p>
+            <ul>
+                <li>Choose your attack wisely — balance damage and energy</li>
+                <li>Build combos by chaining consecutive hits</li>
+                <li>Use Shadow Veil to block strong attacks</li>
+                <li>Shadow Step to evade and recover energy</li>
+                <li>Your <strong>Assassin IQ</strong> rises with every smart play</li>
+            </ul>
+            <p><strong>Rank System:</strong> Shadow → Blade → Phantom → Reaper → Legend</p>
+        </div>
+        <button class="btn btn-secondary" onclick="closeModal('aboutModal')">Close</button>
+    </div>
+</div>
+
+<script src="js/assassin.js"></script>
+<script src="js/combat.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>
